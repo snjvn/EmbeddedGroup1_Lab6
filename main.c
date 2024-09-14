@@ -21,7 +21,7 @@ int main(void)
 
     PWM1_CTL_R = 0x00;
     PWM1_3_CTL_R = 0x00; // enable after PWM is fully configured
-    PWM1_3_GENB_R = 0x32; // when counter hits zero, drive pwm_out = 0; when counter hits cmpA, drive pwm_out = 1;
+    PWM1_3_GENB_R = 0x202; // when counter hits zero, drive pwm_out = 0; when counter hits cmpA, drive pwm_out = 1;
     PWM1_3_LOAD_R = 160;
     PWM1_3_CMPB_R = 79; // 79 for 50% duty cycle
     PWM1_3_CMPA_R = 0;
