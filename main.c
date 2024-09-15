@@ -51,13 +51,15 @@ void GPIOInterrupt(){
     GPIO_PORTF_IM_R = 0x00; // masking both switches
 
     if (PORTF_Interrupt == 0x01){
+        GPIO_PORTF_DATA_R ^= 0x02;
         GPIO_PORTF_CR_R = 0x01;
         duty += 8;
     }
 
     else if (PORTF_Interrupt == 0x10){
-            GPIO_PORTF_CR_R = 0x10;
-            duty -= 8;
+        GPIO_PORTF_DATA_R ^= 0x02;
+        GPIO_PORTF_CR_R = 0x10;
+        duty -= 8;
         }
 
 }
