@@ -8,7 +8,7 @@
 
 void GPIOInterrupt(void);
 uint32_t PORTF_Interrupt = 0x00;
-int duty = 80;
+int duty = 150;
 int main(void)
 {
     SYSCTL_RCGC2_R |= 0x00000020;       /* enable clock to GPIOF */
@@ -37,6 +37,7 @@ int main(void)
     while(1){
         NVIC_EN0_R = 0x40000000; // 30th bit controls PORTF
         GPIO_PORTF_IM_R = 0x11; // unmasking both switches
+//        GPIO_PORTF_CR_R = 0x00;
         TIMER1_TBMATCHR_R = duty;
     }
 
@@ -45,21 +46,28 @@ int main(void)
 
 
 void GPIOInterrupt(){
+    PORTF_Interrupt = GPIO_PORTF_RIS_R & 0x11;
 
-    PORTF_Interrupt = GPIO_PORTF_RIS_R;
     NVIC_EN0_R = 0x00000000; // 30th bit controls PORTF
     GPIO_PORTF_IM_R = 0x00; // masking both switches
-
     if (PORTF_Interrupt == 0x01){
-        GPIO_PORTF_DATA_R ^= 0x02;
-        GPIO_PORTF_CR_R = 0x01;
+        GPIO_PORTF_ICR_R = 0x01;
         duty += 8;
+        if (duty >= 160){ // saturating
+            duty = 160;
+        }
     }
 
     else if (PORTF_Interrupt == 0x10){
-        GPIO_PORTF_DATA_R ^= 0x02;
-        GPIO_PORTF_CR_R = 0x10;
-        duty -= 8;
+        GPIO_PORTF_ICR_R = 0x10;
+            duty -= 8;
+            if (duty <= 0){ // saturating
+                duty = 0;
+            }
         }
+
+
+    GPIO_PORTF_DATA_R ^= 0x02;
+
 
 }
