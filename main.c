@@ -8,7 +8,7 @@
 
 void GPIOInterrupt(void);
 uint32_t PORTF_Interrupt = 0x00;
-int duty = 150;
+int duty = 80;
 int main(void)
 {
     SYSCTL_RCGC2_R |= 0x00000020;       /* enable clock to GPIOF */
@@ -53,8 +53,8 @@ void GPIOInterrupt(){
     if (PORTF_Interrupt == 0x01){
         GPIO_PORTF_ICR_R = 0x01;
         duty += 8;
-        if (duty >= 160){ // saturating
-            duty = 160;
+        if (duty >= 152){ // saturating
+            duty = 152;
         }
     }
 
@@ -67,7 +67,7 @@ void GPIOInterrupt(){
         }
 
 
-    GPIO_PORTF_DATA_R ^= 0x02;
+//    GPIO_PORTF_DATA_R ^= 0x02;
 
 
 }
