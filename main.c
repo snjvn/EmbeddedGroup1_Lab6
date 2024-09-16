@@ -7,11 +7,13 @@
  */
 
 void GPIOInterrupt(void);
+void SystickInterrupt(void);
 void INIT_SYS_CTRL_REGISTERS(void);
 void INIT_GPIO_PORTF_REGISTERS(void);
 void INIT_TIMER1_REGISTERS(void);
 
 uint32_t PORTF_Interrupt = 0x00;
+uint32_t SW_State = 0x00;
 int duty = 80;
 int main(void)
 {
@@ -59,8 +61,33 @@ void INIT_TIMER1_REGISTERS(){
     TIMER1_CTL_R = 0x0100;
 }
 
+void INIT_SYSTICK(){
+    NVIC_ST_RELOAD_R = 16000*500; // 500 ms
+    NVIC_ST_CURRENT_R = 0x00;
+    NVIC_ST_CTRL_R = 0x00000007;
+}
+
+void SystickInterrupt(){
+    SW_State = (GPIO_PORTF_DATA_R & 0x01);
+    if (SW_STATE == 0x00){
+        duty -= 8;
+        if (duty <= 0){ // saturating
+            duty = 0;
+        }
+    }
+
+    else{
+        NVIC_ST_CURRENT_R = 0x00;
+        NVIC_ST_CTRL_R = 0x00000000;
+    }
+}
+
 void GPIOInterrupt(){
     PORTF_Interrupt = GPIO_PORTF_RIS_R & 0x11;
+
+
+    INIT_SYSTICK();
+
 
     NVIC_EN0_R = 0x00000000; // 30th bit controls PORTF
     GPIO_PORTF_IM_R = 0x00; // masking both switches
@@ -72,16 +99,6 @@ void GPIOInterrupt(){
         }
     }
 
-    else if (PORTF_Interrupt == 0x10){
-        GPIO_PORTF_ICR_R = 0x10;
-            duty -= 8;
-            if (duty <= 0){ // saturating
-                duty = 0;
-            }
-        }
-
-
-//    GPIO_PORTF_DATA_R ^= 0x02;
 
 
 }
