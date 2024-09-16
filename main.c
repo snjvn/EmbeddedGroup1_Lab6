@@ -23,7 +23,7 @@ int main(void)
 
     while(1){
         NVIC_EN0_R = 0x40000000; // 30th bit controls PORTF
-        GPIO_PORTF_IM_R = 0x11; // unmasking both switches
+        GPIO_PORTF_IM_R = 0x01; // unmasking both switches
 //        GPIO_PORTF_CR_R = 0x00;
         TIMER1_TBMATCHR_R = duty;
     }
@@ -49,7 +49,7 @@ void INIT_GPIO_PORTF_REGISTERS(){
     NVIC_EN0_R = 0x40000000; // 30th bit controls PORTF
     GPIO_PORTF_IS_R = 0x00; // interrupt sensitivity - edge
     GPIO_PORTF_IEV_R = 0x00;
-    GPIO_PORTF_IM_R = 0x11; // unmasking both switches
+    GPIO_PORTF_IM_R = 0x01; // unmasking both switches
 }
 
 void INIT_TIMER1_REGISTERS(){
@@ -69,7 +69,7 @@ void INIT_SYSTICK(){
 
 void SystickInterrupt(){
     SW_State = (GPIO_PORTF_DATA_R & 0x01);
-    if (SW_STATE == 0x00){
+    if (SW_State == 0x00){
         duty -= 8;
         if (duty <= 0){ // saturating
             duty = 0;
